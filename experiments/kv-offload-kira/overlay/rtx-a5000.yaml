@@ -1,0 +1,12 @@
+_comment: "NVIDIA RTX A5000 (GA102, Ampere workstation, 230 W), KIRA's ibm1 GPU. TFlopsPeak=111.1 is DENSE BF16 tensor (datasheet 222.2 TFLOPS is with sparsity). No FP8 tensor cores on Ampere, so TFlopsFP8=0 as for A100. Source: NVIDIA RTX A5000 datasheet (https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/rtx-a5000/nvidia-rtx-a5000-datasheet.pdf)."
+Provenance: vendor_spec
+TFlopsPeak: 111.1
+TFlopsFP8: 0
+BwPeakTBs: 0.768
+MemoryGiB: 24.0
+_comment_interconnect: "IntraNodeBwGBps: PCIe Gen4 x16, ~32 GB/s per direction (vendor_spec). The optional 2-way NVLink bridge (112.5 GB/s bidirectional) is not assumed; KIRA serves on one GPU."
+IntraNodeBwGBps: 32
+_comment_sm: "SMCount: 64 enabled SMs on GA102 as shipped in RTX A5000 (8,192 CUDA cores / 128 per SM), NVIDIA datasheet."
+SMCount: 64
+_comment_cc: "ComputeCapability 8.6 (https://developer.nvidia.com/cuda-gpus)."
+ComputeCapability: "8.6"

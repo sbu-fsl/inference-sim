@@ -1,0 +1,94 @@
+{
+ "kv_tokens_ibm1": [
+  95872,
+  95696
+ ],
+ "kv_tokens_ibm2": [
+  95872,
+  96383
+ ],
+ "prefill_65536_ibm2_s": [
+  844.305425,
+  520
+ ],
+ "knee_ibm1_agent_hot": [
+  [
+   {
+    "host": "ibm1",
+    "rate": 0.0078125,
+    "achieved_over_offered": 1.02,
+    "ttft_p99_s": 50.88,
+    "sustained": true
+   },
+   {
+    "host": "ibm1",
+    "rate": 0.015625,
+    "achieved_over_offered": 1.01,
+    "ttft_p99_s": 54.52,
+    "sustained": true
+   },
+   {
+    "host": "ibm1",
+    "rate": 0.03125,
+    "achieved_over_offered": 0.864,
+    "ttft_p99_s": 115.61,
+    "sustained": true
+   },
+   {
+    "host": "ibm1",
+    "rate": 0.0625,
+    "achieved_over_offered": 0.658,
+    "ttft_p99_s": 80.38,
+    "sustained": false
+   },
+   {
+    "host": "ibm1",
+    "rate": 0.125,
+    "achieved_over_offered": 0.327,
+    "ttft_p99_s": 1206.08,
+    "sustained": false
+   }
+  ],
+  "1/32"
+ ],
+ "knee_ibm2_chat": [
+  [
+   {
+    "host": "ibm2",
+    "rate": 0.5,
+    "achieved_over_offered": 1.019,
+    "ttft_p99_s": 1.19,
+    "sustained": true
+   },
+   {
+    "host": "ibm2",
+    "rate": 1,
+    "achieved_over_offered": 0.908,
+    "ttft_p99_s": 1.27,
+    "sustained": true
+   },
+   {
+    "host": "ibm2",
+    "rate": 2,
+    "achieved_over_offered": 0.782,
+    "ttft_p99_s": 37.57,
+    "sustained": false
+   },
+   {
+    "host": "ibm2",
+    "rate": 4,
+    "achieved_over_offered": 0.41,
+    "ttft_p99_s": 237.28,
+    "sustained": false
+   },
+   {
+    "host": "ibm2",
+    "rate": 8,
+    "achieved_over_offered": 0.205,
+    "ttft_p99_s": 681.88,
+    "sustained": false
+   }
+  ],
+  "1"
+ ]
+}

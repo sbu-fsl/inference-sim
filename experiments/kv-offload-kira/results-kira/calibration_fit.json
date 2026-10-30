@@ -1,0 +1,30 @@
+[
+ {
+  "gpu": "rtx-a5000",
+  "coefficient": "attention_prefill_work_scale",
+  "value": 0.80448,
+  "target": 25.4,
+  "fitted_to": 25.399878
+ },
+ {
+  "gpu": "rtx-a5000",
+  "coefficient": "host_launch_eager_per_layer",
+  "value": 27.06813,
+  "target": 39.35,
+  "fitted_to": 39.34999820915033
+ },
+ {
+  "gpu": "quadro-rtx-6000",
+  "coefficient": "attention_prefill_work_scale",
+  "value": 0.01537,
+  "target": 0.372,
+  "fitted_to": 0.372231
+ },
+ {
+  "gpu": "quadro-rtx-6000",
+  "coefficient": "host_launch_eager_per_layer",
+  "value": 48.21872,
+  "target": 52.2,
+  "fitted_to": 52.19488647058824
+ }
+]
