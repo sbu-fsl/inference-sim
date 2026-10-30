@@ -7,6 +7,10 @@
   95872,
   96383
  ],
+ "prefill_65536_ibm1_s": [
+  28.038443,
+  25.4
+ ],
  "prefill_65536_ibm2_s": [
   844.305425,
   520
@@ -17,35 +21,35 @@
     "host": "ibm1",
     "rate": 0.0078125,
     "achieved_over_offered": 1.02,
-    "ttft_p99_s": 50.88,
+    "ttft_p99_s": 54.35,
     "sustained": true
    },
    {
     "host": "ibm1",
     "rate": 0.015625,
-    "achieved_over_offered": 1.01,
-    "ttft_p99_s": 54.52,
+    "achieved_over_offered": 1.008,
+    "ttft_p99_s": 57.99,
     "sustained": true
    },
    {
     "host": "ibm1",
     "rate": 0.03125,
-    "achieved_over_offered": 0.864,
-    "ttft_p99_s": 115.61,
+    "achieved_over_offered": 0.863,
+    "ttft_p99_s": 131.17,
     "sustained": true
    },
    {
     "host": "ibm1",
     "rate": 0.0625,
     "achieved_over_offered": 0.658,
-    "ttft_p99_s": 80.38,
+    "ttft_p99_s": 88.2,
     "sustained": false
    },
    {
     "host": "ibm1",
     "rate": 0.125,
-    "achieved_over_offered": 0.327,
-    "ttft_p99_s": 1206.08,
+    "achieved_over_offered": 0.333,
+    "ttft_p99_s": 1176.38,
     "sustained": false
    }
   ],

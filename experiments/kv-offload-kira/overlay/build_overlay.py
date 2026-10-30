@@ -11,8 +11,9 @@ Neither pinned repo knows KIRA's GPUs, model or disks. This copies both into
             copies of L40S's NCCL fits (required even at TP1), and their own GEMM/attention entries.
 
 L40S is the donor for every GPU-specific value: marked `copied`, or `assumed` when scaled by bandwidth.
-calibration.json ({gpu: {name: [value, rationale]}}, written by ../kira_repro.py calibrate) replaces
-donor values with fits to KIRA observations that are not the scored results.
+measured.json (../gpubench/fit_gpubench.py) replaces donor values with kernel timings on the GPU itself, and
+calibration.json ({gpu: {name: [value, rationale]}}, written by ../kira_repro.py calibrate) with fits to KIRA
+observations that are not the scored results.
 
     python3 experiments/kv-offload-kira/overlay/build_overlay.py
 """
@@ -76,9 +77,12 @@ def own(hw):
 def block(hw, name, value, units, method, why):
     return (f"  - {name}:\n      value: {value}\n      units: {units}\n      method: {method}\n"
             + ('      copied_from: "hardware=l40s"\n' if method == "copied" else "") +
-            f"      fitted: false\n      scope: {{hardware: [{hw}]}}\n      sources:\n"
+            # a measured curve fit is fitted; a measured rate (copy bandwidth) is read straight off the run
+            f"      fitted: {'true' if method == 'measured' and name not in ('hbm_derate', 'host_link_bandwidth') else 'false'}\n"
+            f"      scope: {{hardware: [{hw}]}}\n      sources:\n"
             + (f"        - {{kind: measured_case, cite: \"KIRA (github.com/sbu-fsl/KIRA) {hw}, Qwen3-4B-Instruct-2507, vLLM 0.28.0 eager: see rationale\", role: primary}}\n"
                "      validated: [ttft_p50, ttft_p99]\n" if method == "calibrated" else
+               f"        - {{kind: measured_case, cite: \"{why}\", role: primary}}\n" if method == "measured" else
                "        - {kind: model, cite: \"inference-sim experiments/kv-offload-kira/overlay/build_overlay.py (L40S donor)\", role: primary}\n")
             + f"      rationale: >\n        {why}\n")
 
@@ -116,6 +120,14 @@ def main():
                     f"22 Oct 2026 (KIRA archive/docs/2026-10-26-performance.md). base_latency_us ASSUMED from the "
                     f"catalog class.\"\n  read_bandwidth_mb_s: {rd}\n  write_bandwidth_mb_s: {wr}\n  base_latency_us: {lat}\n")
     sets = {hw: own(hw) for hw in GPUS}
+    # measured.json ({gpu: {cite, coefficients}}, written by ../gpubench/fit_gpubench.py): kernel timings on the
+    # GPU itself replace the donor values; calibration.json is applied after, for what no benchmark measures
+    meas = HERE / "measured.json"
+    for hw, m in (json.loads(meas.read_text()) if meas.exists() else {}).items():
+        for name, value in m["coefficients"].items():
+            for entries in sets[hw].values():
+                if name in entries:
+                    entries[name] = (value, entries[name][1], "measured", m["cite"])
     cal = HERE / "calibration.json"
     for hw, fits in (json.loads(cal.read_text()) if cal.exists() else {}).items():
         for name, (value, why) in fits.items():

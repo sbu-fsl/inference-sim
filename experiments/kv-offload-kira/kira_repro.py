@@ -164,9 +164,9 @@ def chat_tpot(host, disk, scenario=None):
 # gpu: [(coefficient, target, measure, lo, hi, why)], fitted in order by bisection (each observable falls as its
 # coefficient's value rises for the scale, and rises with it for the launch cost; `sign` says which)
 FITS = {
+    # ibm1's attention_prefill_work_scale is measured (gpubench, overlay/measured.json), so the 25.4 s 65K prefill
+    # it was fitted to is now an unfitted check; the launch cost is CPU dispatch, which no kernel timing measures
     "rtx-a5000": [
-        ("attention_prefill_work_scale", 25.4, lambda: single_prefill("ibm1", 65536), 0.001, 2.0, -1,
-         "Fitted so one cold 65,536-token Qwen3-4B prefill on ibm1 takes 25.4 s (KIRA m15_batch2.md E1: a 64K prefill runs at 3.8e8 B/s end to end over 9.66 GB; vLLM request_prefill_time 20-30 s on 8 recomputes)."),
         ("host_launch_eager_per_layer", 39.35, lambda: chat_tpot("ibm1", "ibm1 NVMe"), 0.0, 1000.0, +1,
          "Fitted so KIRA's chat class (1024/256, 0.5 req/s, 300 requests) has a 39.35 ms mean TPOT on ibm1 (KIRA performance.md, E36 jobs 65/66, stock: 39.2 and 39.5 ms): vLLM eager dispatch on a 2.2 GHz Xeon Silver 4114."),
     ],
@@ -233,6 +233,8 @@ def checks():
     res = {
         "kv_tokens_ibm1": [kv(HOSTS["ibm1"][0], "ibm1"), 95696],
         "kv_tokens_ibm2": [kv("qwen3-4b-instruct-2507-quadro-rtx-6000-memcheck.yaml", "ibm2"), 96383],
+        # m15_batch2.md E1: a 64K prefill at 3.8e8 B/s end to end over 9.66 GB (vLLM request_prefill_time 20-30 s)
+        "prefill_65536_ibm1_s": [single_prefill("ibm1", 65536), 25.4],
         # run log batch 1, ibm2 job 10: "Triton prefill of 59K tokens runs at 130 tok/s, 520 s a request"
         "prefill_65536_ibm2_s": [single_prefill("ibm2", 65536, "qwen3-4b-instruct-2507-quadro-rtx-6000-memcheck.yaml"), 520],
         "knee_ibm1_agent_hot": [kira_knee("ibm1", "agent", 8, "ibm1 SATA", 32, [1 / 128, 1 / 64, 1 / 32, 1 / 16, 1 / 8], 600), "1/32"],
