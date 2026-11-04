@@ -45,7 +45,10 @@ def timed(fn, inner):
     once = time.perf_counter() - t0
     reps = 3 if once > 0.5 else 10  # a long prefill on Turing takes seconds; keep the job bounded
     inner = 1 if once > 0.05 else inner
-    call, mode = lambda: [fn() for _ in range(inner)], "eager"
+    def call():  # a loop, not a list: keeping 20 lm_head outputs (1.16 GiB each at M=4096) ran jobs 103 and 95 out of memory
+        for _ in range(inner):
+            fn()
+    mode = "eager"
     if once < 1e-3:
         try:
             s = torch.cuda.Stream()
@@ -68,7 +71,7 @@ def timed(fn, inner):
         call()
         b.record(); b.synchronize()
         out.append(a.elapsed_time(b) / inner)
-    if mode == "cuda_graph":  # a graph holds its outputs' memory until reset; job 103 ran out of memory without this
+    if mode == "cuda_graph":  # a graph holds its outputs' memory until reset
         g.reset()
         torch.cuda.empty_cache()
     return statistics.median(out)

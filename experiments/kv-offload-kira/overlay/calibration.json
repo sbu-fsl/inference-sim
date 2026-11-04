@@ -1,17 +1,13 @@
 {
  "rtx-a5000": {
   "host_launch_eager_per_layer": [
-   57.88707,
+   57.89279,
    "Fitted so KIRA's chat class (1024/256, 0.5 req/s, 300 requests) has a 39.35 ms mean TPOT on ibm1 (KIRA performance.md, E36 jobs 65/66, stock: 39.2 and 39.5 ms): vLLM eager dispatch on a 2.2 GHz Xeon Silver 4114."
   ]
  },
  "quadro-rtx-6000": {
-  "attention_prefill_work_scale": [
-   0.01537,
-   "Fitted so one 1,024-token chat prefill on ibm2 takes 372 ms (KIRA tier_compare/diagnosis.md: vLLM request_prefill_time for E33's cold chat prompts). Turing has no FlashAttention; vLLM runs Triton attention."
-  ],
   "host_launch_eager_per_layer": [
-   48.21872,
+   24.3864,
    "Fitted so KIRA's chat class (1024/256, 0.5 req/s, 300 requests) has a 52.2 ms mean TPOT on ibm2 (KIRA performance.md, E36 jobs 47/48, stock: 52.3 and 52.1 ms): vLLM eager dispatch on a 2.2 GHz Xeon Silver 4114."
   ]
  }

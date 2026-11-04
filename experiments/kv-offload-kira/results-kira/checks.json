@@ -8,11 +8,15 @@
   96383
  ],
  "prefill_65536_ibm1_s": [
-  28.038443,
+  28.174897,
   25.4
  ],
+ "prefill_1024_ibm2_s": [
+  0.345715,
+  0.372
+ ],
  "prefill_65536_ibm2_s": [
-  844.305425,
+  763.8680350000001,
   520
  ],
  "knee_ibm1_agent_hot": [
@@ -21,35 +25,35 @@
     "host": "ibm1",
     "rate": 0.0078125,
     "achieved_over_offered": 1.02,
-    "ttft_p99_s": 54.35,
+    "ttft_p99_s": 54.53,
     "sustained": true
    },
    {
     "host": "ibm1",
     "rate": 0.015625,
     "achieved_over_offered": 1.008,
-    "ttft_p99_s": 57.99,
+    "ttft_p99_s": 58.17,
     "sustained": true
    },
    {
     "host": "ibm1",
     "rate": 0.03125,
     "achieved_over_offered": 0.863,
-    "ttft_p99_s": 131.17,
+    "ttft_p99_s": 132.05,
     "sustained": true
    },
    {
     "host": "ibm1",
     "rate": 0.0625,
     "achieved_over_offered": 0.658,
-    "ttft_p99_s": 88.2,
+    "ttft_p99_s": 88.63,
     "sustained": false
    },
    {
     "host": "ibm1",
     "rate": 0.125,
-    "achieved_over_offered": 0.333,
-    "ttft_p99_s": 1176.38,
+    "achieved_over_offered": 0.332,
+    "ttft_p99_s": 1180.87,
     "sustained": false
    }
   ],
@@ -60,36 +64,36 @@
    {
     "host": "ibm2",
     "rate": 0.5,
-    "achieved_over_offered": 1.019,
-    "ttft_p99_s": 1.19,
+    "achieved_over_offered": 1.029,
+    "ttft_p99_s": 1.28,
     "sustained": true
    },
    {
     "host": "ibm2",
     "rate": 1,
-    "achieved_over_offered": 0.908,
-    "ttft_p99_s": 1.27,
+    "achieved_over_offered": 0.896,
+    "ttft_p99_s": 1.33,
     "sustained": true
    },
    {
     "host": "ibm2",
     "rate": 2,
-    "achieved_over_offered": 0.782,
-    "ttft_p99_s": 37.57,
+    "achieved_over_offered": 0.525,
+    "ttft_p99_s": 146.72,
     "sustained": false
    },
    {
     "host": "ibm2",
     "rate": 4,
-    "achieved_over_offered": 0.41,
-    "ttft_p99_s": 237.28,
+    "achieved_over_offered": 0.268,
+    "ttft_p99_s": 455.76,
     "sustained": false
    },
    {
     "host": "ibm2",
     "rate": 8,
-    "achieved_over_offered": 0.205,
-    "ttft_p99_s": 681.88,
+    "achieved_over_offered": 0.134,
+    "ttft_p99_s": 1133.74,
     "sustained": false
    }
   ],

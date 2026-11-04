@@ -2,7 +2,7 @@
 """Simulate KIRA's ibm1/ibm2 KV-offload runs in BLIS and score them against what KIRA measured.
 
     python3 experiments/kv-offload-kira/overlay/build_overlay.py   # once (calibrate rebuilds it)
-    python3 experiments/kv-offload-kira/kira_repro.py calibrate    # fits 4 coefficients on independent KIRA numbers
+    python3 experiments/kv-offload-kira/kira_repro.py calibrate    # fits 2 launch costs on independent KIRA numbers
     python3 experiments/kv-offload-kira/kira_repro.py checks       # memory, prefill, knee: unfitted checks
     python3 experiments/kv-offload-kira/kira_repro.py cases        # every scored KIRA case, 5 seeds
 
@@ -164,15 +164,14 @@ def chat_tpot(host, disk, scenario=None):
 # gpu: [(coefficient, target, measure, lo, hi, why)], fitted in order by bisection (each observable falls as its
 # coefficient's value rises for the scale, and rises with it for the launch cost; `sign` says which)
 FITS = {
-    # ibm1's attention_prefill_work_scale is measured (gpubench, overlay/measured.json), so the 25.4 s 65K prefill
-    # it was fitted to is now an unfitted check; the launch cost is CPU dispatch, which no kernel timing measures
+    # both GPUs' attention_prefill_work_scale is measured (gpubench, overlay/measured.json), so the prefills it was
+    # fitted to (ibm1's 25.4 s 65K, ibm2's 372 ms 1K) are now unfitted checks; the launch cost is CPU dispatch,
+    # which no kernel timing measures
     "rtx-a5000": [
         ("host_launch_eager_per_layer", 39.35, lambda: chat_tpot("ibm1", "ibm1 NVMe"), 0.0, 1000.0, +1,
          "Fitted so KIRA's chat class (1024/256, 0.5 req/s, 300 requests) has a 39.35 ms mean TPOT on ibm1 (KIRA performance.md, E36 jobs 65/66, stock: 39.2 and 39.5 ms): vLLM eager dispatch on a 2.2 GHz Xeon Silver 4114."),
     ],
     "quadro-rtx-6000": [
-        ("attention_prefill_work_scale", 0.372, lambda: single_prefill("ibm2", 1024), 0.0001, 2.0, -1,
-         "Fitted so one 1,024-token chat prefill on ibm2 takes 372 ms (KIRA tier_compare/diagnosis.md: vLLM request_prefill_time for E33's cold chat prompts). Turing has no FlashAttention; vLLM runs Triton attention."),
         ("host_launch_eager_per_layer", 52.2, lambda: chat_tpot("ibm2", "ibm2 NVMe"), 0.0, 1000.0, +1,
          "Fitted so KIRA's chat class (1024/256, 0.5 req/s, 300 requests) has a 52.2 ms mean TPOT on ibm2 (KIRA performance.md, E36 jobs 47/48, stock: 52.3 and 52.1 ms): vLLM eager dispatch on a 2.2 GHz Xeon Silver 4114."),
     ],
@@ -235,6 +234,8 @@ def checks():
         "kv_tokens_ibm2": [kv("qwen3-4b-instruct-2507-quadro-rtx-6000-memcheck.yaml", "ibm2"), 96383],
         # m15_batch2.md E1: a 64K prefill at 3.8e8 B/s end to end over 9.66 GB (vLLM request_prefill_time 20-30 s)
         "prefill_65536_ibm1_s": [single_prefill("ibm1", 65536), 25.4],
+        # tier_compare/diagnosis.md: vLLM request_prefill_time for E33's cold 1K chat prompts on ibm2
+        "prefill_1024_ibm2_s": [single_prefill("ibm2", 1024), 0.372],
         # run log batch 1, ibm2 job 10: "Triton prefill of 59K tokens runs at 130 tok/s, 520 s a request"
         "prefill_65536_ibm2_s": [single_prefill("ibm2", 65536, "qwen3-4b-instruct-2507-quadro-rtx-6000-memcheck.yaml"), 520],
         "knee_ibm1_agent_hot": [kira_knee("ibm1", "agent", 8, "ibm1 SATA", 32, [1 / 128, 1 / 64, 1 / 32, 1 / 16, 1 / 8], 600), "1/32"],

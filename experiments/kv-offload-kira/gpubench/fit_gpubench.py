@@ -4,13 +4,13 @@
 The rows are written as AISimulate's Parquet tables (<data>/<sku>/{gemm,attention}/vllm/<version>/), then:
   gemm_eps_max / gemm_m_half          scripts/fit_gemm_envelope.py  (envelope + fit_ramp)
   attention_decode_floor / _rate      scripts/fit_attention.py
-  attention_prefill_floor / _scale    scripts/fit_attention_prefill.py (on the envelope just measured)
+  attention_prefill_floor / _scale    scripts/fit_attention_prefill.py's fit on wider grids (fit_prefill)
   hbm_derate                          device copy rate / catalog BwPeakTBs
   host_link_bandwidth                 slower direction of the pinned copies, bytes/us
 
     python fit_gpubench.py ibm1-102.json ibm1-103.json   # needs pyarrow and pyyaml; later files win per op
 """
-import importlib.util, json, re, subprocess, sys, tempfile
+import importlib.util, json, math, re, subprocess, sys, tempfile
 from pathlib import Path
 
 import pyarrow as pa, pyarrow.parquet as pq, yaml
@@ -29,6 +29,19 @@ def load(name):
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def fit_prefill(rows, peak, eps, m_half):
+    """fit_attention_prefill.py's form and objective, latency = floor + causal_flops / (peak * eff(tokens) * scale)
+    by mean |log ratio|, on wider grids: its scale grid starts at 0.10 and its floor stops at 39.5 us, and Turing's
+    Triton prefill sits near 0.02, so there the registry fitter stops on its grid edge."""
+    pts = []
+    for r in rows:
+        tok = r["batch_size"] * r["isl"]
+        flops = 2.0 * r["batch_size"] * r["num_heads"] * r["head_dim"] * r["isl"] ** 2  # causal: half of 4*b*h*d*s^2
+        pts.append((flops / (peak * eps * tok / (tok + m_half)), r["latency"] * 1e-3))
+    err = lambda f, s: math.exp(sum(abs(math.log((f * 1e-6 + w / s) / lat)) for w, lat in pts) / len(pts))
+    return min((err(f, s), f, s) for f in [x * 0.5 for x in range(2, 401)] for s in [x * 0.001 for x in range(5, 2001)])
 
 
 def main(paths):
@@ -73,12 +86,13 @@ def main(paths):
                                                        for k in ("h2d_pinned", "d2h_pinned")))
     floor, frac = (float(x) for x in re.search(r"decode_floor\s+([\d.]+) us\nattention_decode_bw_fraction\s+([\d.]+)",
                                                 out["decode_fit"]).groups())
-    pfloor, scale = (float(x) for x in re.search(r"floor=\s*([\d.]+)us work_scale=([\d.]+)", out["prefill_fit"]).groups())
+    perr, pfloor, scale = fit_prefill([r for r in rows if r["op_name"] == "context_attention"], peak, eps, m_half)
+    out["prefill_fit_wide_grid"] = f"floor={pfloor:.1f}us work_scale={scale:.3f} geo-err {perr:.3f}x"
     out["coefficients"] = {  # registry names and units
         "gemm_eps_max_bf16": eps, "gemm_m_half_bf16": m_half, "hbm_derate": out["hbm_derate"],
         "host_link_bandwidth": out["host_link_bandwidth_bytes_per_us"],
         "attention_decode_floor": floor, "attention_decode_rate": round(frac * hw["BwPeakTBs"] * 1e6),
-        "attention_prefill_floor": pfloor, "attention_prefill_work_scale": scale}
+        "attention_prefill_floor": pfloor, "attention_prefill_work_scale": round(scale, 3)}
     print(json.dumps(out, indent=1))
     Path(paths[-1]).with_suffix(".fit.json").write_text(json.dumps(out, indent=1) + "\n")
     # the overlay's measured values for this GPU (build_overlay.py applies them as method: measured)
