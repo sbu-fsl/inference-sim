@@ -1,6 +1,6 @@
 # Simulated vs measured: KIRA's four KV-tier devices in BLIS
 
-Run 28 October 2026; rerun 4 November with both GPUs' kernel coefficients measured on their own hosts. BLIS simulates KIRA's hardware runs on the four ibm disk tiers and scores each simulated
+Run 28 October 2026; rerun 4 November with both GPUs' kernel coefficients measured on their own hosts, then rerun twice more from scratch to check it reproduces. BLIS simulates KIRA's hardware runs on the four ibm disk tiers and scores each simulated
 value against what KIRA measured. Sources: KIRA's
 [performance report](https://github.com/sbu-fsl/KIRA/blob/main/archive/docs/2026-10-26-performance.md), the
 tier-compare report (`.claude/reports/tier_compare/`, E32/E33), M15 (`.claude/reports/m15_batch2.md`) and the run
@@ -29,6 +29,24 @@ python3 kira_repro.py cases                     # every scored case × 5 seeds, 
 Pins: inference-sim `29f783c7` (the fork's `1813579` plus one commit touching only review tooling), blis-catalog
 `0.3.0`, blis-registry `v0.2.0`, kernel v0.3.0, KIRA `a72f0b43`. Runs are deterministic. `cases` takes about
 4 minutes of CPU.
+
+## Reproducibility: two clean reruns
+
+The whole pipeline was rerun 2 more times from scratch on 4 November at `0067f3be`. Each rerun used fresh clones of
+this branch, blis-catalog `0.3.0` and blis-registry `v0.2.0`, rebuilt `blis` and the overlay, refitted the 2 launch
+costs from nothing (`calibrate`), then ran `checks`, all 18 cases × 5 seeds (`cases`) and the gpubench fits again.
+`rerun_clean.sh <work dir> [commit]` does one such rerun (about 6 minutes) and lists any committed file that changed.
+
+| compared | result |
+|---|---|
+| committed results (`calibration.json`, `calibration_fit.json`, `checks.json`, `cases.json`, `cases.md`, both `*.fit.json`, `measured.json`) vs each rerun | byte-identical in both reruns |
+| rerun 1 vs rerun 2: `cases.json` and the `calibrate` / `checks` output | byte-identical |
+| rerun 1 vs rerun 2: the 102 per-run metrics files under `results-kira/raw/` | identical except one field, the catalog folder path each run was given |
+
+So the numbers here do not depend on the machine state or on the run: the fit lands on the same launch costs and
+every case gives the same TTFT and decode values. The spread across the 5 seeds in the tables comes from the
+workload (arrival times and prompt order), not from run-to-run noise. This says nothing about KIRA's own
+run-to-run spread, because its cells are single runs.
 
 ## What BLIS needed (an overlay; nothing upstream changed)
 
