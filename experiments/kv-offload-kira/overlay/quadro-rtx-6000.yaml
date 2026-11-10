@@ -1,0 +1,12 @@
+_comment: "NVIDIA Quadro RTX 6000 (TU102, Turing), KIRA's ibm2 GPU. No BF16 on Turing: vLLM serves the BF16 checkpoint in FP16, same 2 bytes a value, so TFlopsPeak is the FP16 tensor rate, 130.5 TFLOPS dense (Turing has no structured sparsity). No FP8. KIRA runs it with Triton attention (no FlashAttention before Ampere). Source: NVIDIA Quadro RTX 6000 datasheet (https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/quadro-rtx-6000-us-nvidia-704093-r4-web.pdf)."
+Provenance: vendor_spec
+TFlopsPeak: 130.5
+TFlopsFP8: 0
+BwPeakTBs: 0.672
+MemoryGiB: 24.0
+_comment_interconnect: "IntraNodeBwGBps: PCIe Gen3 x16, ~16 GB/s per direction (vendor_spec). The optional NVLink bridge is not assumed; KIRA serves on one GPU."
+IntraNodeBwGBps: 16
+_comment_sm: "SMCount: 72 SMs on TU102 as shipped in Quadro RTX 6000 (4,608 CUDA cores / 64 per SM), NVIDIA datasheet."
+SMCount: 72
+_comment_cc: "ComputeCapability 7.5 (https://developer.nvidia.com/cuda-gpus)."
+ComputeCapability: "7.5"

@@ -1,0 +1,33 @@
+{
+ "sources": {
+  "context_attention": "ibm1-103.json",
+  "d2h_pinned": "ibm1-103.json",
+  "device_copy": "ibm1-103.json",
+  "gemm": "ibm1-102.json",
+  "generation_attention": "ibm1-103.json",
+  "h2d_pinned": "ibm1-103.json"
+ },
+ "device": "NVIDIA RTX A5000",
+ "vllm": "0.28.0",
+ "dtype": "bfloat16",
+ "gemm_eps_max": 0.847,
+ "gemm_m_half": 64,
+ "gemm_rms": 0.0497,
+ "gemm_token_counts": 24,
+ "gemm_best_fraction_of_peak": 0.828,
+ "decode_fit": "# NVIDIA RTX A5000, VLLM 0.28.0\n# 221 full-attention decode points of 221 rows\nattention_decode_floor        16.5 us\nattention_decode_bw_fraction   0.90 of 0.768 TB/s = 0.69 TB/s\ngeometric error               1.053x  (pure KV read at 0.8 derate: 1.5x)",
+ "prefill_fit": "rtx-a5000      n=    30 floor= 31.0us work_scale=0.64 geo-err 1.182x  (FLOPs-only 2.3x)",
+ "hbm_derate": 0.889,
+ "host_link_bandwidth_bytes_per_us": 12319,
+ "prefill_fit_wide_grid": "floor=31.0us work_scale=0.636 geo-err 1.182x",
+ "coefficients": {
+  "gemm_eps_max_bf16": 0.847,
+  "gemm_m_half_bf16": 64,
+  "hbm_derate": 0.889,
+  "host_link_bandwidth": 12319,
+  "attention_decode_floor": 16.5,
+  "attention_decode_rate": 691200,
+  "attention_prefill_floor": 31.0,
+  "attention_prefill_work_scale": 0.636
+ }
+}

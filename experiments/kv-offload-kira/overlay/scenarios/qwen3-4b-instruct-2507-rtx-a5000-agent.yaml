@@ -1,0 +1,36 @@
+# KIRA ibm1 reproduction: Qwen3-4B-Instruct-2507 on one RTX A5000, as KIRA's benchmark/rig/serve.sh ran it:
+# vLLM 0.28.0, --enforce-eager, --max-model-len 65856, --gpu-memory-utilization 0.9, prefix caching on,
+# block size 16, and vLLM 0.28's defaults for a <70 GiB GPU under `vllm serve` (2048 batched tokens, 256 seqs).
+# blis-latency-kernel v0.3.0 prices vLLM 0.31.0 behaviour whatever engine_version says.
+kind: Scenario
+name: qwen3-4b-instruct-2507-rtx-a5000-agent
+engine_version: "0.29.0"  # KIRA ran 0.28.0; the kernel knows 0.29.0 and 0.31.0 only
+
+model: qwen3-4b-instruct-2507
+coefficients: [cost-model-primitives, cost-model-collectives, cost-model-host-overheads, cost-model-attention, cost-model-recurrent, cost-model-memory]
+
+cluster:
+  hardware: rtx-a5000
+  nodes: 1
+  gpus_per_node: 1
+---
+kind: Deployment
+name: qwen3-4b-instruct-2507-rtx-a5000-agent
+
+pools:
+  - role: colocated
+    nodes: 1
+    parallel:
+      tp: 1
+      pp: 1
+      dp: 1
+      enable_expert_parallel: false
+    engine:
+      cache_dtype: auto
+      block_size: 16
+      max_num_batched_tokens: 2048
+      max_num_seqs: 256
+      max_model_len: 66112  # KIRA 65,856 + 256: a warm request carries its cold round's 256 output tokens (kira_repro.py)
+      cudagraph_mode: NONE
+      gpu_memory_utilization: 0.90
+      enable_prefix_caching: true

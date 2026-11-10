@@ -1,0 +1,35 @@
+# KIRA E33 (ibm2 chat): Qwen3-4B-Instruct-2507 on one Quadro RTX 6000 as KIRA's benchmark/rig/serve.sh ran it on ibm2:
+# vLLM 0.28.0 (FP16 on Turing, Triton attention), --enforce-eager, prefix caching, block 16, vLLM 0.28's
+# defaults for a <70 GiB GPU under `vllm serve` (2048 batched tokens, 256 seqs). GPU cache capped at 4096 blocks (65,536 tokens) as E33 did with --num-gpu-blocks-override; BLIS has no override, so gpu_memory_utilization is set to land there. MAX_LEN is the rig default 8192.
+kind: Scenario
+name: qwen3-4b-instruct-2507-quadro-rtx-6000-chat
+engine_version: "0.29.0"  # KIRA ran 0.28.0; the kernel knows 0.29.0 and 0.31.0 only
+
+model: qwen3-4b-instruct-2507
+coefficients: [cost-model-primitives, cost-model-collectives, cost-model-host-overheads, cost-model-attention, cost-model-recurrent, cost-model-memory]
+
+cluster:
+  hardware: quadro-rtx-6000
+  nodes: 1
+  gpus_per_node: 1
+---
+kind: Deployment
+name: qwen3-4b-instruct-2507-quadro-rtx-6000-chat
+
+pools:
+  - role: colocated
+    nodes: 1
+    parallel:
+      tp: 1
+      pp: 1
+      dp: 1
+      enable_expert_parallel: false
+    engine:
+      cache_dtype: auto
+      block_size: 16
+      max_num_batched_tokens: 2048
+      max_num_seqs: 256
+      max_model_len: 8192
+      cudagraph_mode: NONE
+      gpu_memory_utilization: 0.7265  # lands 65,536 KV tokens = KIRA's 4096-block cap
+      enable_prefix_caching: true

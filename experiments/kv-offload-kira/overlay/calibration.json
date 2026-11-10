@@ -1,0 +1,14 @@
+{
+ "rtx-a5000": {
+  "host_launch_eager_per_layer": [
+   57.89279,
+   "Fitted so KIRA's chat class (1024/256, 0.5 req/s, 300 requests) has a 39.35 ms mean TPOT on ibm1 (KIRA performance.md, E36 jobs 65/66, stock: 39.2 and 39.5 ms): vLLM eager dispatch on a 2.2 GHz Xeon Silver 4114."
+  ]
+ },
+ "quadro-rtx-6000": {
+  "host_launch_eager_per_layer": [
+   24.3864,
+   "Fitted so KIRA's chat class (1024/256, 0.5 req/s, 300 requests) has a 52.2 ms mean TPOT on ibm2 (KIRA performance.md, E36 jobs 47/48, stock: 52.3 and 52.1 ms): vLLM eager dispatch on a 2.2 GHz Xeon Silver 4114."
+  ]
+ }
+}

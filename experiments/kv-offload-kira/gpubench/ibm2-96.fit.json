@@ -1,0 +1,33 @@
+{
+ "sources": {
+  "context_attention": "ibm2-96.json",
+  "d2h_pinned": "ibm2-96.json",
+  "device_copy": "ibm2-96.json",
+  "gemm": "ibm2-96.json",
+  "generation_attention": "ibm2-96.json",
+  "h2d_pinned": "ibm2-96.json"
+ },
+ "device": "Quadro RTX 6000",
+ "vllm": "0.28.0",
+ "dtype": "float16",
+ "gemm_eps_max": 0.702,
+ "gemm_m_half": 84,
+ "gemm_rms": 0.0322,
+ "gemm_token_counts": 24,
+ "gemm_best_fraction_of_peak": 0.698,
+ "decode_fit": "# Quadro RTX 6000, VLLM 0.28.0\n# 221 full-attention decode points of 221 rows\nattention_decode_floor         9.0 us\nattention_decode_bw_fraction   0.14 of 0.672 TB/s = 0.09 TB/s\ngeometric error               1.064x  (pure KV read at 0.8 derate: 6.2x)",
+ "prefill_fit": "quadro-rtx-6000 n=    30 floor= 39.5us work_scale=0.10 geo-err 4.890x  (FLOPs-only 55.2x)",
+ "hbm_derate": 0.844,
+ "host_link_bandwidth_bytes_per_us": 12194,
+ "prefill_fit_wide_grid": "floor=26.5us work_scale=0.019 geo-err 1.042x",
+ "coefficients": {
+  "gemm_eps_max_bf16": 0.702,
+  "gemm_m_half_bf16": 84,
+  "hbm_derate": 0.844,
+  "host_link_bandwidth": 12194,
+  "attention_decode_floor": 9.0,
+  "attention_decode_rate": 94080,
+  "attention_prefill_floor": 26.5,
+  "attention_prefill_work_scale": 0.019
+ }
+}

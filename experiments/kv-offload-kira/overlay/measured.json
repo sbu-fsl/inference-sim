@@ -1,0 +1,28 @@
+{
+ "rtx-a5000": {
+  "cite": "inference-sim experiments/kv-offload-kira/gpubench on KIRA's host (NVIDIA RTX A5000, vLLM 0.28.0, bfloat16): context_attention from ibm1-103.json, d2h_pinned from ibm1-103.json, device_copy from ibm1-103.json, gemm from ibm1-102.json, generation_attention from ibm1-103.json, h2d_pinned from ibm1-103.json",
+  "coefficients": {
+   "gemm_eps_max_bf16": 0.847,
+   "gemm_m_half_bf16": 64,
+   "hbm_derate": 0.889,
+   "host_link_bandwidth": 12319,
+   "attention_decode_floor": 16.5,
+   "attention_decode_rate": 691200,
+   "attention_prefill_floor": 31.0,
+   "attention_prefill_work_scale": 0.636
+  }
+ },
+ "quadro-rtx-6000": {
+  "cite": "inference-sim experiments/kv-offload-kira/gpubench on KIRA's host (Quadro RTX 6000, vLLM 0.28.0, float16): context_attention from ibm2-96.json, d2h_pinned from ibm2-96.json, device_copy from ibm2-96.json, gemm from ibm2-96.json, generation_attention from ibm2-96.json, h2d_pinned from ibm2-96.json",
+  "coefficients": {
+   "gemm_eps_max_bf16": 0.702,
+   "gemm_m_half_bf16": 84,
+   "hbm_derate": 0.844,
+   "host_link_bandwidth": 12194,
+   "attention_decode_floor": 9.0,
+   "attention_decode_rate": 94080,
+   "attention_prefill_floor": 26.5,
+   "attention_prefill_work_scale": 0.019
+  }
+ }
+}
