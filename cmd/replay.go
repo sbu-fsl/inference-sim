@@ -573,6 +573,7 @@ Example:
 		if err := cs.Run(); err != nil {
 			logrus.Fatalf("Replay simulation failed: %v", err)
 		}
+		writeEnergyOutputs(cs, cs.AggregatedMetrics())
 		if agx != nil {
 			agx.driver.Finish(cs.Clock())
 			ps, pe := agx.driver.Window()
@@ -685,6 +686,7 @@ func init() {
 
 	// Saturation trace flags (#1516): --detectors + --saturation-config + --saturation-report.
 	registerDetectorFlags(replayCmd)
+	registerEnergyFlags(replayCmd)
 	registerAgentXReplayFlags(replayCmd)
 	// The Result document's encoding, file and summary view (#1871).
 	registerResultFlags(replayCmd)

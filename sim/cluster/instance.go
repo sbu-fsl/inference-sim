@@ -562,3 +562,6 @@ func (i *InstanceSimulator) AdapterCapacity() int {
 // AdapterPins is how many of the instance's requests pin each LoRA adapter's resident slot (nil
 // when LoRA is inert): an eviction must release its victim's pin (INV-L5).
 func (i *InstanceSimulator) AdapterPins() map[string]int { return i.drv.AdapterPins() }
+
+// EnergyMeter is the instance's energy meter, nil when energy metering is off.
+func (i *InstanceSimulator) EnergyMeter() *sim.EnergyMeter { return i.drv.EnergyMeter() }

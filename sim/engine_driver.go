@@ -59,6 +59,9 @@ type EngineDriverConfig struct {
 	// steps in a row emit no token and finish no request while the engine holds work. Zero
 	// means DefaultStallSteps.
 	StallSteps int
+	// Energy, when non-nil, meters the instance's GPU energy (sim/energy.go). nil is inert:
+	// no meter is built and output is byte-identical (INV-6).
+	Energy *EnergyConfig
 }
 
 // DefaultStallSteps is the progress watchdog's limit when EngineDriverConfig.StallSteps is
@@ -71,8 +74,9 @@ const DefaultStallSteps = 1_000_000
 // counterpart of Simulator: the same events reach it (arrivals, steps, timeouts), and it records
 // the same report, but every engine decision is the engine's, through the contract only.
 type EngineDriver struct {
-	eng engine.Engine
-	cfg EngineDriverConfig
+	eng    engine.Engine
+	cfg    EngineDriverConfig
+	energy *EnergyMeter // nil when energy metering is off
 
 	Clock   int64
 	Horizon int64
@@ -187,6 +191,9 @@ func NewEngineDriver(eng engine.Engine, cfg EngineDriverConfig) *EngineDriver {
 		reqs: map[string]*driverReq{}}
 }
 
+// EnergyMeter is the driver's energy meter, nil when metering is off.
+func (d *EngineDriver) EnergyMeter() *EnergyMeter { return d.energy }
+
 // NewEngineDriverWithFrontend wraps an engine behind the host's API-server front end, the
 // compatibility path's render stage (FrontendConfig, Renderer; INV-R1): each request's
 // QueueingTime runs on one of the endpoint's render threads, in arrival order, and the request
@@ -196,6 +203,11 @@ func NewEngineDriverWithFrontend(eng engine.Engine, cfg EngineDriverConfig, f Fr
 		return nil, fmt.Errorf("NewEngineDriverWithFrontend: %w", err)
 	}
 	d := NewEngineDriver(eng, cfg)
+	m, err := NewEnergyMeter(cfg.Energy, eng)
+	if err != nil {
+		return nil, err
+	}
+	d.energy = m
 	if f.Enabled() {
 		r, err := NewRenderer(max(f.APIServerCount, 1), f.RendererNumWorkers)
 		if err != nil {
@@ -663,6 +675,9 @@ func (d *EngineDriver) kick(now int64) {
 func (d *EngineDriver) timeBatch(b engine.Batch, now int64) (start, end int64) {
 	start = max(now, d.gpuFreeAt)
 	total := max(d.eng.StepTime(b), 1)
+	if d.energy != nil {
+		d.energy.Record(b, start, total)
+	}
 	p, ok := d.eng.(engine.Pipelined)
 	if !ok {
 		d.gpuFreeAt = start + total
@@ -672,6 +687,9 @@ func (d *EngineDriver) timeBatch(b engine.Batch, now int64) (start, end int64) {
 	if len(stages) <= 1 && d.stageFreeAt == nil {
 		d.gpuFreeAt = start + total
 		return start, d.gpuFreeAt
+	}
+	if d.energy != nil {
+		d.energy.NotePipelined()
 	}
 	if len(stages) <= 1 {
 		// A batch the engine did not split, behind pipelined ones, holds every stage: it starts

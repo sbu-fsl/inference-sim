@@ -1215,6 +1215,7 @@ var runCmd = &cobra.Command{
 		if err := cs.Run(); err != nil {
 			logrus.Fatalf("Simulation failed: %v", err)
 		}
+		writeEnergyOutputs(cs, cs.AggregatedMetrics())
 
 		// Surface any terminal sampler / generator error the lazy source
 		// recorded on a per-client state during the run. Eager mode would
@@ -1597,6 +1598,7 @@ func init() {
 
 	// Saturation trace flags (#1516): --detectors + --saturation-config + --saturation-report.
 	registerDetectorFlags(runCmd)
+	registerEnergyFlags(runCmd)
 	// The Result document's encoding, file and summary view (#1871).
 	registerResultFlags(runCmd)
 

@@ -69,6 +69,7 @@ func engineDriverFactory(ref engineRef, horizon, seed int64, latency latencyMode
 	// every pool's engine (blis-vllm#90, design §3.3, VAL-6).
 	data := mustRunData()
 	frontend := groupFrontendConfigFromCLI(dataParallelism)
+	energyCfg := energySimConfig(tensorParallelism) // nil unless --energy-config
 	build := func(index int, ic sim.InstanceConfig) (*sim.EngineDriver, error) {
 		// The Spec carries no configuration: the factory reads the pool's engine block from the
 		// scenario file itself, so this binary opens no engine configuration.
@@ -94,7 +95,7 @@ func engineDriverFactory(ref engineRef, horizon, seed int64, latency latencyMode
 			}
 			s.EnableServerSeries(iv)
 		}
-		cfg := sim.EngineDriverConfig{Horizon: horizon, Acceptance: acceptance}
+		cfg := sim.EngineDriverConfig{Horizon: horizon, Acceptance: acceptance, Energy: energyCfg}
 		m := latency
 		if kernelPDOpened != nil {
 			// Each P/D pool's host overheads are its own kernel's.
