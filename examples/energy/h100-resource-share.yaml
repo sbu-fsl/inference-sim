@@ -1,0 +1,7 @@
+# Model B, zero-shot H100 SXM constants (no fitting). W_sm = 0.85 TDP and W_hbm = 0.5 TDP from
+# the prefill 80-90% / decode 40-60% of TDP measurements (Patel et al., ASPLOS'24; Wilkins et
+# al., arXiv:2603.18383); W_host and idle = 60 W (Özcan et al., arXiv:2507.11417).
+model: resource_share
+idle_w: 60
+pue: 1.0
+resource_share: {sm_w: 595, hbm_w: 350, nvlink_w: 350, nic_w: 350, pcie_w: 60, copy_engine_w: 60, host_w: 60}

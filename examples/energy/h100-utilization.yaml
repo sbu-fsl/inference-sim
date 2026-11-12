@@ -1,0 +1,7 @@
+# Model A (Vidur-Energy, Özcan et al., arXiv:2507.11417 Eq. 1): H100 SXM 60 W idle, 700 W max,
+# MFU_sat 0.45, gamma 0.7 as published. peak_tflops = catalog hardware/h100.yaml TFlopsPeak (BF16 dense).
+# active_params_b is the model's active parameter count (8.0 for Llama-3.1-8B).
+model: utilization
+idle_w: 60
+pue: 1.0
+utilization: {max_w: 700, mfu_sat: 0.45, gamma: 0.7, peak_tflops: 989.5, active_params_b: 8.0}

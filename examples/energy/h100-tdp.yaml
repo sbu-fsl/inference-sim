@@ -1,0 +1,5 @@
+# Baseline: H100 SXM rated power (NVIDIA datasheet: up to 700 W) whenever a step runs.
+model: tdp
+idle_w: 60
+pue: 1.0
+tdp: {watts: 700}

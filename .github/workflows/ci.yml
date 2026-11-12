@@ -91,6 +91,10 @@ jobs:
           - name: "other packages"
             packages: "./internal/substratedata ./internal/kernelfixtures ./internal/stack/... ./sim/saturation ./sim/check ./internal/invariantscan"
             timeout: "5m"
+          # The GPU power models and their config loader (docs/guide/energy.md).
+          - name: "energy models"
+            packages: "./sim/energy"
+            timeout: "5m"
 
     steps:
       - name: Checkout code
